@@ -31,25 +31,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { SparklesCore } from '@/components/ui/sparkles';
 
-// Types
-interface PatientData {
-  fullName: string;
-  age: number;
-  gender: 'male' | 'female' | 'other';
-  phone: string;
-  email: string;
-}
-
-interface ManifestationsData {
-  complaint: string;
-  symptoms: string[];
-}
-
-interface HistoryData {
-  files: any[];
-  manualHistory: string;
-}
-
 interface ReviewData {
   consent: boolean;
 }
