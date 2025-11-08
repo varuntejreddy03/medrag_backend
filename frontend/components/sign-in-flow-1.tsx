@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Mail, ArrowRight, Brain, Shield, Zap, Loader2 } from 'lucide-react';
 import { RainbowButton } from '@/components/ui/rainbow-button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChallengeCard } from '@/components/ui/card-9';
 
 import { toast } from '@/components/ui/toast';
 
@@ -94,14 +95,20 @@ const LandingLogin: React.FC<LandingLoginProps> = ({ onSuccess }) => {
     }
   };
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: scrollRef });
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
+
   return (
-    <div className="h-screen w-screen bg-slate-900 text-white overflow-auto">
+    <div ref={scrollRef} className="h-screen w-screen bg-transparent text-white overflow-y-auto overflow-x-hidden scroll-smooth">
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         {!showLogin ? (
           // Landing Section
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            style={{ opacity, scale }}
             className="text-center max-w-4xl mx-auto"
           >
             <motion.div
@@ -110,56 +117,85 @@ const LandingLogin: React.FC<LandingLoginProps> = ({ onSuccess }) => {
               transition={{ delay: 0.2 }}
               className="mb-8"
             >
-              <Brain className="w-20 h-20 text-emerald-400 mx-auto mb-4" />
-              <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
-                Welcome to MedRAG
-              </h1>
-              <p className="text-xl md:text-2xl text-gray-300 mb-8">
-                Professional Medical AI
-              </p>
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="mb-6"
               >
-                <Card className="bg-slate-900/50 border-slate-700/30">
-                  <CardContent className="p-6 text-center">
-                    <Brain className="w-12 h-12 text-blue-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2 text-white">AI Diagnosis</h3>
-                    <p className="text-white text-sm">Advanced AI-powered medical analysis</p>
-                  </CardContent>
-                </Card>
+                <Brain className="w-24 h-24 text-cyan-400 mx-auto drop-shadow-[0_0_25px_rgba(34,211,238,0.5)]" />
               </motion.div>
-
-              <motion.div
+              <motion.h1 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
+                className="text-6xl md:text-8xl font-black mb-6 tracking-tight"
               >
-                <Card className="bg-slate-900/50 border-slate-700/30">
-                  <CardContent className="p-6 text-center">
-                    <Shield className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2 text-white">Secure</h3>
-                    <p className="text-white text-sm">HIPAA compliant and secure</p>
-                  </CardContent>
-                </Card>
+                <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-teal-400 bg-clip-text text-transparent drop-shadow-2xl">
+                  AI-Powered
+                </span>
+                <br />
+                <span className="bg-gradient-to-r from-white via-blue-100 to-cyan-100 bg-clip-text text-transparent">
+                  Medical Diagnosis
+                </span>
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="text-lg md:text-xl text-cyan-200/60 mb-8 max-w-2xl mx-auto font-light"
+              >
+                Advanced RAG technology for accurate clinical insights
+              </motion.p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 relative z-0">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ delay: 0.3 }}
+              >
+                <ChallengeCard
+                  title="AI Diagnosis"
+                  description="Advanced AI-powered medical analysis with real-time insights"
+                  buttonText="Learn More"
+                  backgroundColor="bg-gradient-to-br from-blue-500/80 to-cyan-600/80 backdrop-blur-md"
+                  icon={<Brain className="w-12 h-12 text-white" />}
+                  className="max-w-full"
+                />
               </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ delay: 0.4 }}
+              >
+                <ChallengeCard
+                  title="Secure"
+                  description="HIPAA compliant and secure patient data protection"
+                  buttonText="Learn More"
+                  backgroundColor="bg-gradient-to-br from-teal-500/80 to-emerald-600/80 backdrop-blur-md"
+                  icon={<Shield className="w-12 h-12 text-white" />}
+                  className="max-w-full"
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
                 transition={{ delay: 0.5 }}
               >
-                <Card className="bg-slate-900/50 border-slate-700/30">
-                  <CardContent className="p-6 text-center">
-                    <Zap className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2 text-white">Fast</h3>
-                    <p className="text-white text-sm">Instant medical insights</p>
-                  </CardContent>
-                </Card>
+                <ChallengeCard
+                  title="Fast"
+                  description="Instant medical insights and diagnosis results"
+                  buttonText="Learn More"
+                  backgroundColor="bg-gradient-to-br from-cyan-500/80 to-blue-600/80 backdrop-blur-md"
+                  icon={<Zap className="w-12 h-12 text-white" />}
+                  className="max-w-full"
+                />
               </motion.div>
             </div>
 
@@ -170,7 +206,7 @@ const LandingLogin: React.FC<LandingLoginProps> = ({ onSuccess }) => {
             >
               <RainbowButton
                 onClick={() => setShowLogin(true)}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 text-lg"
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-10 py-5 text-lg shadow-lg shadow-cyan-500/50"
               >
                 Get Started
                 <ArrowRight className="w-5 h-5 ml-2" />
@@ -184,9 +220,9 @@ const LandingLogin: React.FC<LandingLoginProps> = ({ onSuccess }) => {
             animate={{ opacity: 1, scale: 1 }}
             className="w-full max-w-md"
           >
-            <Card className="bg-slate-900/90 border-slate-700/30">
+            <Card className="bg-slate-900/70 backdrop-blur-xl border-slate-700/50">
               <CardHeader className="text-center">
-                <Brain className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
+                <Brain className="w-12 h-12 text-cyan-400 mx-auto mb-4" />
                 <CardTitle className="text-2xl text-white">Welcome to MedRAG</CardTitle>
                 <p className="text-gray-400">Enter your email to continue</p>
               </CardHeader>
@@ -216,7 +252,7 @@ const LandingLogin: React.FC<LandingLoginProps> = ({ onSuccess }) => {
                     </div>
                     <RainbowButton
                       type="submit"
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                      className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
                       disabled={isLoading || !name.trim()}
                     >
                       {isLoading ? (
@@ -236,7 +272,7 @@ const LandingLogin: React.FC<LandingLoginProps> = ({ onSuccess }) => {
                   <form onSubmit={handleOtpSubmit} className="space-y-4">
                     <div className="text-center mb-4">
                       <p className="text-sm text-gray-400">Enter the 6-digit code sent to:</p>
-                      <p className="text-emerald-400 font-medium">{email}</p>
+                      <p className="text-cyan-400 font-medium">{email}</p>
                     </div>
                     <Input
                       type="text"
@@ -250,7 +286,7 @@ const LandingLogin: React.FC<LandingLoginProps> = ({ onSuccess }) => {
                     />
                     <RainbowButton
                       type="submit"
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                      className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
                       disabled={isLoading || otp.length !== 6}
                     >
                       {isLoading ? (

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SignInPage } from "@/components/sign-in-flow-1";
+import { LandingHero } from "@/components/landing-hero";
 import HealthcareDashboard from "@/components/dashboard";
 import DiagnosticDashboard from "@/components/diagnostic-dashboard";
 import ClinicalWizard from "@/components/clinical-wizard";
@@ -85,9 +85,9 @@ const DemoOne = () => {
             exit="out"
             variants={pageVariants}
             transition={pageTransition}
-            className="flex w-full h-screen justify-center items-center"
+            className="w-full min-h-screen"
           >
-            <SignInPage onSuccess={() => handleViewChange('dashboard')} />
+            <LandingHero onSuccess={() => handleViewChange('dashboard')} />
           </motion.div>
         )}
 
