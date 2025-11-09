@@ -56,11 +56,11 @@ async def rate_limit_middleware(request: Request, call_next):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "*",
-        "https://medrag-app.surge.sh",
-        "https://*.surge.sh"
+        "https://psmedrag.vercel.app",
+        "https://*.vercel.app",
+        "http://localhost:3000"
     ],
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -68,7 +68,7 @@ app.add_middleware(
 # Security: Trusted hosts
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["*"]
+    allowed_hosts=["18.212.60.60", "localhost", "127.0.0.1", "*.vercel.app"]
 )
 
 # ----------------------------------------------------------
