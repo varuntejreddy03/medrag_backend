@@ -2,69 +2,142 @@
 
 AI-powered medical diagnosis system using Retrieval-Augmented Generation (RAG) with clinical case database.
 
-## Architecture
+## 🏗️ Project Structure
 
-- **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS
-- **Backend**: FastAPI, Python, FAISS vector search
-- **Database**: PostgreSQL (AWS RDS)
-- **Storage**: AWS S3 (model files)
-- **AI**: Google Gemini 2.0, Sentence Transformers
+```
+MedRAG_App/
+├── backend/          # FastAPI backend with RAG engine
+├── frontend/         # Next.js 14 frontend
+└── README.md         # This file
+```
 
-## Features
+## 🚀 Quick Start
 
-- Clinical wizard for patient case submission
-- Real-time AI diagnosis with medical reasoning
-- Interactive chat interface
-- Dashboard with analytics
-- Email notifications
-- Session management (30-min timeout)
-
-## Setup
-
-### Backend
+### Backend Setup
 ```bash
 cd backend
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
-# Download models from S3
-python -c "from s3_loader import download_from_s3; download_from_s3()"
+# Configure environment
+cp .env.example .env
+# Edit .env with your API keys
 
-# Run
-uvicorn main:app --reload
+# Start Redis
+docker run -d -p 6379:6379 redis:7-alpine
+
+# Start Celery worker
+celery -A app.core.tasks worker --loglevel=info
+
+# Start API server
+uvicorn app.main:app --reload --port 8000
 ```
 
-### Frontend
+### Frontend Setup
 ```bash
 cd frontend
 npm install
+
+# Configure environment
+cp .env.local.example .env.local
+# Edit .env.local with backend URL
+
+# Start development server
 npm run dev
 ```
 
-## Environment Variables
+## 📚 Documentation
+
+- **Backend**: See [backend/README.md](backend/README.md)
+- **Frontend**: See [frontend/README.md](frontend/README.md)
+- **Deployment**: See [backend/DEPLOYMENT.md](backend/DEPLOYMENT.md)
+
+## 🔑 Environment Variables
 
 ### Backend (.env)
-```
-DATABASE_URL=postgresql://...
-S3_BUCKET_NAME=medrag-data-bucket
-AWS_REGION=us-east-1
-AWS_ACCESS_KEY_ID=your-key
-AWS_SECRET_ACCESS_KEY=your-secret
-GEMINI_API_KEY=your-key
-GMAIL_USER=your-email
-GMAIL_APP_PASSWORD=your-password
+```env
+PERPLEXITY_API_KEY=your-api-key
+REDIS_URL=redis://localhost:6379/0
+FAISS_INDEX_PATH=../medrag_outputs/faiss_index.bin
 ```
 
 ### Frontend (.env.local)
-```
+```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-## Deployment
+## 🛠️ Tech Stack
 
-See `backend/deploy_guide.md` for AWS EC2 deployment instructions.
+### Backend
+- FastAPI
+- Celery + Redis
+- FAISS (vector search)
+- Perplexity AI
+- NetworkX (knowledge graphs)
 
-## Model Files
+### Frontend
+- Next.js 14
+- React
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
 
-Large model files (4.4GB FAISS index) are stored in S3 and downloaded on startup.
+## 📦 Features
+
+- ✅ Clinical wizard for patient case submission
+- ✅ Real-time AI diagnosis with medical reasoning
+- ✅ Interactive chat interface
+- ✅ Vector similarity search (FAISS)
+- ✅ Knowledge graph traversal
+- ✅ File upload (PDF, DOCX, JSON, DICOM)
+- ✅ Background task processing
+- ✅ JWT authentication
+- ✅ Prometheus metrics
+
+## 🐳 Docker Deployment
+
+```bash
+# Backend
+cd backend
+docker-compose up -d
+
+# Frontend
+cd frontend
+docker build -t medrag-frontend .
+docker run -p 3000:3000 medrag-frontend
+```
+
+## 📊 API Endpoints
+
+- `POST /api/v1/diagnosis/start` - Start diagnosis
+- `GET /api/v1/diagnosis/{sessionId}` - Get results
+- `POST /api/v1/upload` - Upload medical files
+- `GET /api/v1/health` - Health check
+- `GET /docs` - API documentation
+
+## 🔒 Security
+
+- JWT authentication
+- Rate limiting
+- Input validation
+- CORS configuration
+- Secret management
+
+## 📝 License
+
+MIT License
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Open Pull Request
+
+## 📞 Support
+
+- GitHub Issues
+- API Docs: http://localhost:8000/docs
+- Health Check: http://localhost:8000/api/v1/health
