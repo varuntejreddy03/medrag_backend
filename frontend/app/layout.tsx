@@ -1,21 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { ToastContainer } from '@/components/ui/toast';
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "MedRAG - Medical Diagnosis Assistant",
-  description: "AI-powered medical diagnosis system using Retrieval-Augmented Generation",
+  title: "MedRAG - AI Medical Diagnosis",
+  description: "AI-powered medical diagnosis system using RAG technology",
 };
 
 export default function RootLayout({
@@ -25,12 +13,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
-      >
-        {children}
-        <ToastContainer />
-      </body>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="http://localhost:8000" />
+      </head>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

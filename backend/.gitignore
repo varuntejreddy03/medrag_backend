@@ -12,11 +12,9 @@ ENV/
 dist/
 build/
 
-# Environment & Secrets
+# Environment
 .env
 .env.local
-*.pem
-*.key
 
 # Database
 *.db
@@ -25,19 +23,9 @@ medrag.db
 
 # Large Model Files (store in S3)
 models/
-*.faiss
-*.graphml
-*.xml
 
 # Data files (store in S3)
 data/
-*.csv
-*.json
-
-# Node modules
-node_modules/
-.next/
-out/
 
 # IDE
 .vscode/
@@ -52,6 +40,5 @@ Thumbs.db
 # Logs
 *.log
 
-# Build
-dist/
-build/
+# Nested backend folder
+backend/

@@ -1,5 +1,5 @@
-import { DemoOne } from "@/components/demo";
+import LandingPage from '@/components/ui/landing-page';
 
 export default function Home() {
-  return <DemoOne />;
+  return <LandingPage />;
 }
