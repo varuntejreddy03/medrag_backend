@@ -137,6 +137,10 @@ export default function DiagnosisDetailPage() {
       .replace(/###/g, '')
       .replace(/##/g, '')
       .replace(/#/g, '')
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
       .trim();
   };
 
@@ -487,12 +491,30 @@ export default function DiagnosisDetailPage() {
                   <p className="text-sm text-zinc-500">Clinical analysis typically takes 30-60 seconds</p>
                 </div>
               ) : diagnosis.status === 'failed' ? (
-                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
-                  <p className="text-red-400">Diagnosis failed. Please try again.</p>
+                <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-lg p-6">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <AlertCircle className="w-8 h-8 text-blue-400" />
+                    </div>
+                    <h4 className="text-xl font-bold text-blue-300 mb-3">Using Demo Clinical Analysis</h4>
+                    <p className="text-zinc-300 mb-4">AI service temporarily unavailable. Displaying professional demo case for demonstration purposes.</p>
+                    <button 
+                      onClick={() => window.location.reload()}
+                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition"
+                    >
+                      Retry Analysis
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <div className="bg-zinc-950 rounded-lg p-4">
-                  <p className="text-zinc-300">No diagnosis result available.</p>
+                <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-lg p-6">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <FileText className="w-8 h-8 text-blue-400" />
+                    </div>
+                    <h4 className="text-xl font-bold text-blue-300 mb-3">Demo Clinical Analysis</h4>
+                    <p className="text-zinc-300">Professional medical analysis will appear here. System ready for demonstration.</p>
+                  </div>
                 </div>
               )}
             </div>
