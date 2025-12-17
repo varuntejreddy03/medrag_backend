@@ -143,20 +143,23 @@ export default function DiagnosisDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-        <div className="text-center space-y-6 max-w-md">
+        <div className="text-center space-y-8 max-w-md">
           <div className="relative">
-            <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Loader2 className="w-10 h-10 animate-spin text-white" />
-            </div>
-            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-              <div className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-300 rounded-full text-xs font-medium">
-                Loading
+            <div className="w-24 h-24 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto animate-pulse">
+              <div className="w-16 h-16 bg-zinc-950 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
               </div>
             </div>
+            <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-xl animate-pulse"></div>
           </div>
-          <div>
-            <h2 className="text-2xl font-bold text-white mb-2">Loading Diagnosis</h2>
-            <p className="text-zinc-400">Please wait...</p>
+          <div className="space-y-3">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Loading Clinical Report</h2>
+            <p className="text-zinc-400 text-lg">Analyzing medical data...</p>
+            <div className="flex justify-center space-x-1 mt-4">
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+              <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+              <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+            </div>
           </div>
         </div>
       </div>
@@ -200,8 +203,8 @@ export default function DiagnosisDetailPage() {
               <Shield className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">Clinical Assessment Report</h1>
-              <p className="text-sm text-zinc-400">AI-Assisted Clinical Decision Support</p>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Clinical Assessment Report</h1>
+              <p className="text-base text-zinc-300 font-medium">AI-Assisted Clinical Decision Support System</p>
             </div>
           </div>
           <div className="flex gap-3">
@@ -236,7 +239,7 @@ export default function DiagnosisDetailPage() {
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 rounded-2xl p-6 report-animate">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-white">Clinical Case</h3>
+                <h3 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Clinical Case Details</h3>
                 <span className={`px-3 py-1 rounded-xl text-sm font-medium ${
                   diagnosis.status === 'completed' ? 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-300' :
                   diagnosis.status === 'processing' ? 'bg-blue-500/20 border border-blue-500/30 text-blue-300' :
@@ -293,9 +296,9 @@ export default function DiagnosisDetailPage() {
             <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 rounded-2xl p-8 report-animate">
               <div className="flex items-center gap-3 mb-6">
                 <TrendingUp className="w-6 h-6 text-blue-300" />
-                <h3 className="text-2xl font-semibold text-white">Clinical Decision Support Report</h3>
-                <span className="ml-auto px-4 py-2 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 border border-emerald-500/30 text-emerald-300 rounded-xl text-sm font-medium">
-                  AI-Assisted Diagnosis
+                <h3 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">Clinical Decision Support Report</h3>
+                <span className="ml-auto px-6 py-3 bg-gradient-to-r from-emerald-500/30 to-blue-500/30 border-2 border-emerald-400/50 text-emerald-200 rounded-xl text-base font-bold shadow-lg">
+                  🔬 AI Medical Analysis
                 </span>
               </div>
 
@@ -462,18 +465,26 @@ export default function DiagnosisDetailPage() {
                   )}
                 </div>
               ) : diagnosis.status === 'processing' ? (
-                <div className="bg-zinc-950 rounded-lg p-4 text-center">
-                  <div className="relative mb-4">
-                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto">
-                      <Loader2 className="w-8 h-8 animate-spin text-white" />
+                <div className="bg-zinc-950 rounded-lg p-8 text-center border border-zinc-800">
+                  <div className="relative mb-6">
+                    <div className="w-20 h-20 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto animate-pulse">
+                      <div className="w-14 h-14 bg-zinc-950 rounded-full flex items-center justify-center">
+                        <div className="w-6 h-6 border-3 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                      </div>
                     </div>
+                    <div className="absolute -inset-3 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-xl animate-pulse"></div>
                   </div>
-                  <h4 className="text-lg font-semibold text-white mb-2">AI Analysis in Progress</h4>
-                  <p className="text-zinc-300 mb-4">{statusMessage || 'Processing symptoms and generating diagnosis...'}</p>
-                  <div className="w-full bg-zinc-800 rounded-full h-2 mb-2">
-                    <div className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-500" style={{width: `${progress || 50}%`}}></div>
+                  <h4 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-3">AI Clinical Analysis in Progress</h4>
+                  <p className="text-zinc-300 mb-6 text-lg">{statusMessage || 'Processing clinical data and generating diagnosis...'}</p>
+                  <div className="w-full bg-zinc-800 rounded-full h-3 mb-4 overflow-hidden">
+                    <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 h-3 rounded-full transition-all duration-500 animate-pulse" style={{width: `${progress || 50}%`}}></div>
                   </div>
-                  <p className="text-xs text-zinc-500">This process typically takes 30-60 seconds</p>
+                  <div className="flex justify-center space-x-1 mb-4">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+                  </div>
+                  <p className="text-sm text-zinc-500">Clinical analysis typically takes 30-60 seconds</p>
                 </div>
               ) : diagnosis.status === 'failed' ? (
                 <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
