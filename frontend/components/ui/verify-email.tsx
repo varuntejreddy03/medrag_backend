@@ -1,14 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api-client";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle, Loader2, ArrowRight } from "lucide-react";
 
-export default function VerifyEmailSection() {
+function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -171,5 +171,17 @@ export default function VerifyEmailSection() {
         </Card>
       </div>
     </section>
+  );
+}
+
+export default function VerifyEmailSection() {
+  return (
+    <Suspense fallback={
+      <div className="fixed inset-0 bg-zinc-950 text-zinc-50 grid place-items-center">
+        <Loader2 className="w-8 h-8 animate-spin text-zinc-400" />
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }

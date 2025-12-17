@@ -75,7 +75,7 @@ export function ChatWithDiagnosis({ diagnosisId, onClose }: ChatProps) {
     setLoading(true);
 
     try {
-      const data = await api.chatWithDiagnosis(diagnosisId, userMessage);
+      const data = await api.chatWithDiagnosis(diagnosisId.toString(), userMessage);
       
       const suggestions = [
         "Can you explain this in simpler terms?",
@@ -103,8 +103,8 @@ export function ChatWithDiagnosis({ diagnosisId, onClose }: ChatProps) {
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-white">AI Medical Assistant</h3>
-            <p className="text-xs text-white/60">Powered by Gemini + FAISS</p>
+            <h3 className="font-semibold text-white">Clinical AI Consultant</h3>
+            <p className="text-xs text-white/60">AI-Assisted Clinical Decision Support</p>
           </div>
         </div>
         <button 
@@ -123,25 +123,25 @@ export function ChatWithDiagnosis({ diagnosisId, onClose }: ChatProps) {
             <div className="w-16 h-16 bg-zinc-800 rounded-xl flex items-center justify-center mx-auto mb-4">
               <MessageCircle className="w-8 h-8 text-blue-400" />
             </div>
-            <p className="text-sm">Ask me anything about this diagnosis</p>
+            <p className="text-sm">Clinical consultation and case discussion</p>
             <div className="mt-4 space-y-2">
               <button
                 onClick={() => sendMessage("What are the recommended tests?")}
                 className="w-full text-left px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm text-zinc-300 transition"
               >
-                💉 What are the recommended tests?
+                💉 What investigations are indicated?
               </button>
               <button
                 onClick={() => sendMessage("What is the treatment plan?")}
                 className="w-full text-left px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm text-zinc-300 transition"
               >
-                💊 What is the treatment plan?
+                💊 What is the management approach?
               </button>
               <button
                 onClick={() => sendMessage("What lifestyle changes should I make?")}
                 className="w-full text-left px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm text-zinc-300 transition"
               >
-                🏃 What lifestyle changes should I make?
+                🏃 What are the clinical considerations?
               </button>
             </div>
           </div>
@@ -208,7 +208,7 @@ export function ChatWithDiagnosis({ diagnosisId, onClose }: ChatProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            placeholder="Ask a question..."
+            placeholder="Clinical question or consultation..."
             className="flex-1 px-4 py-3 bg-zinc-950 border border-zinc-800 text-zinc-50 placeholder:text-zinc-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             disabled={loading}
           />

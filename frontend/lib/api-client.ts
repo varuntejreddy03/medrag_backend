@@ -2,7 +2,6 @@ import { API_CONFIG } from './config';
 
 const API_URL = API_CONFIG.BASE_URL;
 
-// Auth
 export interface SignupData {
   email: string;
   password: string;
@@ -14,89 +13,92 @@ export interface LoginData {
   password: string;
 }
 
-// Diagnosis
 export interface DiagnosisRequest {
   patient_name: string;
   patient_email: string;
-  age: number;
-  gender: string;
+  patient_age: number;
+  patient_gender: string;
   symptoms: string;
   medical_history?: string;
 }
 
-// Chat
-export interface ChatRequest {
-  message: string;
-  context?: string;
-}
-
 class APIClient {
+  private getToken(): string | null {
+    return localStorage.getItem('access_token');
+  }
+
   private getHeaders() {
-    return {
-      'Content-Type': 'application/json',
-    };
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    const token = this.getToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    return headers;
   }
 
-  private getOptions(includeCredentials = true) {
-    return includeCredentials ? { credentials: 'include' as RequestCredentials } : {};
-  }
-
-  // Auth endpoints
   async signup(data: SignupData) {
-    const res = await fetch(`${API_URL}/auth/login`, {
+    const res = await fetch(`/api/proxy?path=/auth/signup`, {
       method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify({ username: data.email, password: data.password }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
     });
+    if (!res.ok) throw new Error('Signup failed');
+    return res.json();
+  }
+
+  async verifyOtp(email: string, otp: string) {
+    const res = await fetch(`/api/proxy?path=/auth/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, otp }),
+    });
+    if (!res.ok) throw new Error('OTP verification failed');
+    const data = await res.json();
+    localStorage.setItem('access_token', data.access_token);
+    localStorage.setItem('refresh_token', data.refresh_token);
+    return data;
+  }
+
+  async verifyEmail(token: string) {
+    const res = await fetch(`/api/proxy?path=/auth/verify-email?token=${token}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!res.ok) throw new Error('Email verification failed');
     return res.json();
   }
 
   async login(data: LoginData) {
-    const res = await fetch(`${API_URL}/auth/login`, {
+    const res = await fetch('/api/proxy', {
       method: 'POST',
-      headers: this.getHeaders(),
-      credentials: 'include',
-      body: JSON.stringify({ username: data.email, password: data.password }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
     });
-    return res.json();
+    if (!res.ok) throw new Error('Invalid credentials');
+    const result = await res.json();
+    localStorage.setItem('access_token', result.access_token);
+    localStorage.setItem('refresh_token', result.refresh_token);
+    return result;
   }
 
   async logout() {
-    // No logout endpoint in backend, just clear local token
-    localStorage.removeItem('token');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     return { success: true };
   }
 
-  async verifyEmail(token: string) {
-    // No verify endpoint in backend
-    return { success: true };
-  }
-
-  // User endpoints
   async getCurrentUser() {
-    const res = await fetch(`${API_URL}/auth/me`, {
+    const res = await fetch(`/api/proxy?path=/auth/me`, {
       headers: this.getHeaders(),
-      credentials: 'include',
     });
+    if (!res.ok) throw new Error('Not authenticated');
     return res.json();
   }
 
-  async updateUser(data: any) {
-    const res = await fetch(`${API_URL}/api/v1/patients/${data.id}`, {
-      method: 'PUT',
-      headers: this.getHeaders(),
-      credentials: 'include',
-      body: JSON.stringify(data),
-    });
-    return res.json();
-  }
-
-  // Diagnosis endpoints
   async createDiagnosis(data: DiagnosisRequest) {
-    const res = await fetch(`${API_URL}/api/v1/diagnosis/start`, {
+    const res = await fetch(`/api/proxy?path=/api/v1/diagnosis/start`, {
       method: 'POST',
       headers: this.getHeaders(),
-      credentials: 'include',
       body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
@@ -104,155 +106,61 @@ class APIClient {
   }
 
   async getUserDiagnoses() {
-    const res = await fetch(`${API_URL}/api/v1/patients`, {
+    const res = await fetch(`/api/proxy?path=/api/v1/diagnosis`, {
       headers: this.getHeaders(),
-      credentials: 'include',
     });
-    if (res.status === 403) throw new Error('Not authenticated');
+    if (res.status === 401) throw new Error('Not authenticated');
     if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     return res.json();
   }
 
   async getDiagnosis(id: string) {
-    const res = await fetch(`${API_URL}/api/v1/diagnosis/${id}`, {
+    const res = await fetch(`/api/proxy?path=/api/v1/diagnosis/${id}`, {
       headers: this.getHeaders(),
-      credentials: 'include',
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     return res.json();
   }
 
-  // File upload endpoints
-  async uploadFile(file: File) {
-    const formData = new FormData();
-    formData.append('files', file);
-    const res = await fetch(`${API_URL}/api/v1/upload`, {
+  async chatWithDiagnosis(diagnosisId: string, message: string) {
+    const res = await fetch(`/api/proxy?path=/api/v1/diagnosis/${diagnosisId}/chat`, {
       method: 'POST',
-      body: formData,
-      credentials: 'include',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ message }),
     });
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     return res.json();
   }
 
-  async getUploadProgress(fileId: string) {
-    const res = await fetch(`${API_URL}/api/v1/upload/${fileId}/progress`, {
+  async getDiagnosisStatus(id: string) {
+    const res = await fetch(`/api/proxy?path=/api/v1/diagnosis/${id}/status`, {
       headers: this.getHeaders(),
-      credentials: 'include',
     });
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     return res.json();
   }
 
   async healthCheck() {
-    const res = await fetch(`${API_URL}/api/v1/health`);
+    const res = await fetch(`/api/proxy?path=/health`);
     return res.json();
   }
 
-  // Diagnosis management endpoints
-  async deleteDiagnosis(sessionId: string) {
-    const res = await fetch(`${API_URL}/api/v1/diagnosis/${sessionId}`, {
-      method: 'DELETE',
-      headers: this.getHeaders(),
-      credentials: 'include',
-    });
-    return res.json();
-  }
-
-  async exportDiagnosis(sessionId: string, format: string = 'json') {
-    const res = await fetch(`${API_URL}/api/v1/diagnosis/${sessionId}/export`, {
+  // Admin-only API key management
+  async updateApiKey(provider: string, apiKey: string) {
+    const res = await fetch(`/api/proxy?path=/admin/api-keys`, {
       method: 'POST',
       headers: this.getHeaders(),
-      credentials: 'include',
-      body: JSON.stringify({ format }),
+      body: JSON.stringify({ provider, api_key: apiKey }),
     });
+    if (!res.ok) throw new Error('Failed to update API key');
     return res.json();
   }
 
-  async submitFeedback(sessionId: string, feedback: any) {
-    const res = await fetch(`${API_URL}/api/v1/diagnosis/${sessionId}/feedback`, {
-      method: 'POST',
+  async getApiKeyStatus() {
+    const res = await fetch(`/api/proxy?path=/admin/api-keys/status`, {
       headers: this.getHeaders(),
-      credentials: 'include',
-      body: JSON.stringify(feedback),
     });
-    return res.json();
-  }
-
-  async getDiagnosisSummary(sessionId: string) {
-    const res = await fetch(`${API_URL}/api/v1/diagnosis/${sessionId}/summary`, {
-      headers: this.getHeaders(),
-      credentials: 'include',
-    });
-    return res.json();
-  }
-
-  // Knowledge Graph endpoints
-  async getSessionKG(sessionId: string) {
-    const res = await fetch(`${API_URL}/api/v1/kg/${sessionId}`, {
-      headers: this.getHeaders(),
-      credentials: 'include',
-    });
-    return res.json();
-  }
-
-  async exploreNode(nodeId: string) {
-    const res = await fetch(`${API_URL}/api/v1/kg/explore/${encodeURIComponent(nodeId)}`);
-    return res.json();
-  }
-
-  async findPath(sourceNode: string, targetNode: string) {
-    const res = await fetch(`${API_URL}/api/v1/kg/path/${encodeURIComponent(sourceNode)}/${encodeURIComponent(targetNode)}`);
-    return res.json();
-  }
-
-  async getDiseaseInfo(diseaseName: string) {
-    const res = await fetch(`${API_URL}/api/v1/kg/disease/${encodeURIComponent(diseaseName)}`);
-    return res.json();
-  }
-
-  async getSymptomRelations(symptom: string) {
-    const res = await fetch(`${API_URL}/api/v1/kg/symptoms/${encodeURIComponent(symptom)}`);
-    return res.json();
-  }
-
-  async getKGStats() {
-    const res = await fetch(`${API_URL}/api/v1/kg/stats`);
-    return res.json();
-  }
-
-  async analyzeSymptoms(symptoms: string[]) {
-    const res = await fetch(`${API_URL}/api/v1/kg/analyze`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify({ symptoms }),
-    });
-    return res.json();
-  }
-
-  // Patient endpoints
-  async createPatient(data: any) {
-    const res = await fetch(`${API_URL}/api/v1/patients`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      credentials: 'include',
-      body: JSON.stringify(data),
-    });
-    return res.json();
-  }
-
-  async getPatient(patientId: string) {
-    const res = await fetch(`${API_URL}/api/v1/patients/${patientId}`, {
-      headers: this.getHeaders(),
-      credentials: 'include',
-    });
-    return res.json();
-  }
-
-  async deletePatient(patientId: string) {
-    const res = await fetch(`${API_URL}/api/v1/patients/${patientId}`, {
-      method: 'DELETE',
-      headers: this.getHeaders(),
-      credentials: 'include',
-    });
+    if (!res.ok) throw new Error('Failed to get API key status');
     return res.json();
   }
 }

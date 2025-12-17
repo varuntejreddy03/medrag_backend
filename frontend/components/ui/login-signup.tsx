@@ -31,6 +31,9 @@ export default function TabAuthSection() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,9 +56,38 @@ export default function TabAuthSection() {
     setLoading(true);
     try {
       await api.signup({ email: signupEmail, password: signupPassword, full_name: signupName });
-      setSuccess("Account created! Check your email to verify.");
+      setSuccess("OTP sent to your email!");
+      setShowOtp(true);
     } catch (err: any) {
       setError(err.message || "Signup failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (value.length > 1) value = value[0];
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+    if (value && index < 5) otpRefs.current[index + 1]?.focus();
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const otpCode = otp.join("");
+      await api.verifyOtp(signupEmail, otpCode);
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError(err.message || "OTP verification failed");
     } finally {
       setLoading(false);
     }
@@ -247,6 +279,7 @@ export default function TabAuthSection() {
                 </TabsContent>
 
                 <TabsContent value="signup" forceMount className="tab-panel space-y-5">
+                  {!showOtp ? (
                   <form onSubmit={handleSignup} className="space-y-5">
                     <div className="grid gap-2">
                       <Label htmlFor="name" className="text-zinc-300">Full Name</Label>
@@ -310,6 +343,42 @@ export default function TabAuthSection() {
                       {loading ? "Creating..." : "Create account"}
                     </Button>
                   </form>
+                  ) : (
+                  <div className="space-y-5">
+                    <div className="text-center">
+                      <h3 className="text-lg font-semibold text-white mb-2">Verify Your Email</h3>
+                      <p className="text-sm text-zinc-400">Enter the 6-digit code sent to {signupEmail}</p>
+                    </div>
+                    <div className="flex gap-2 justify-center">
+                      {otp.map((digit, index) => (
+                        <Input
+                          key={index}
+                          ref={(el) => { otpRefs.current[index] = el; }}
+                          type="text"
+                          maxLength={1}
+                          value={digit}
+                          onChange={(e) => handleOtpChange(index, e.target.value)}
+                          onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                          className="w-12 h-12 text-center text-lg bg-zinc-950 border-zinc-800 text-zinc-50"
+                        />
+                      ))}
+                    </div>
+                    <Button
+                      onClick={handleVerifyOtp}
+                      disabled={loading || otp.some(d => !d)}
+                      className="w-full h-10 rounded-lg bg-zinc-50 text-zinc-900 hover:bg-zinc-200"
+                    >
+                      {loading ? "Verifying..." : "Verify OTP"}
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => setShowOtp(false)}
+                      className="w-full text-sm text-zinc-400 hover:text-zinc-200"
+                    >
+                      Back to signup
+                    </button>
+                  </div>
+                  )}
                 </TabsContent>
               </div>
             </Tabs>

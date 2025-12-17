@@ -1,18 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NODE_ENV === 'production' 
+      ? 'https://medrag-final.loca.lt' 
+      : 'http://localhost:8000',
   },
   experimental: {
     optimizeCss: true,
   },
-  images: {
-    unoptimized: true,
-  },
-  poweredByHeader: false,
-  compress: true,
 }
 
 module.exports = nextConfig
